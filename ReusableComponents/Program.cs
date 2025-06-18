@@ -1,0 +1,71 @@
+﻿using Ers;
+using Ers.Model;
+using Ers.Platform;
+
+namespace ReusableComponents
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            ERS.Initialize();
+
+            Logger.SetLogLevel(LogLevel.Info);
+
+            ModelContainer modelContainer = ModelContainer.CreateModelContainer();
+            modelContainer.SetPrecision(1_000_000);
+            modelContainer.SetSeed(1);
+            Simulator sim = modelContainer.AddSimulator("Sim1", SimulatorType.DiscreteEvent);
+            sim.EnterSubModel();
+
+            SubModel subModel = SubModel.GetSubModel();
+            subModel.AddComponentType<SourceBehavior>();
+            subModel.AddComponentType<QueueBehavior>();
+            subModel.AddComponentType<ServerBehavior>();
+            subModel.AddComponentType<SinkBehavior>();
+            subModel.AddComponentType<Product>();
+            subModel.AddComponentType<Channel>();
+
+            Entity sourceEntity = subModel.CreateEntity("Source");
+            sourceEntity.AddComponent<SourceBehavior>();
+            sourceEntity.AddComponent<Channel>();
+
+            Entity queueEntity = subModel.CreateEntity("Queue");
+            QueueBehavior queue = queueEntity.AddComponent<QueueBehavior>();
+            queueEntity.AddComponent<Channel>();
+
+            Entity serverEntity = subModel.CreateEntity("Server");
+            ServerBehavior server = serverEntity.AddComponent<ServerBehavior>();
+            serverEntity.AddComponent<Channel>();
+
+            Entity sinkEntity = subModel.CreateEntity("Sink");
+            SinkBehavior sink = sinkEntity.AddComponent<SinkBehavior>();
+            sinkEntity.AddComponent<Channel>();
+
+            // Important to get the components after adding them all
+            var sourceChannel = sourceEntity.GetComponent<Channel>();
+            var queueChannel = queueEntity.GetComponent<Channel>();
+            var serverChannel = serverEntity.GetComponent<Channel>();
+            var sinkChannel = sinkEntity.GetComponent<Channel>();
+
+            sourceChannel.Value.ToEntity = queueEntity;
+            queueChannel.Value.FromEntity = sourceEntity;
+            queueChannel.Value.ToEntity = serverEntity;
+            serverChannel.Value.FromEntity = queueEntity;
+            serverChannel.Value.ToEntity = sinkEntity;
+            sinkChannel.Value.FromEntity = serverEntity;
+            server.PullNext = queue.MoveNext;
+
+            sim.ExitSubModel();
+
+            ulong endTime = 3600 * modelContainer.GetPrecision();
+            while (modelContainer.CurrentTime < endTime)
+            {
+                modelContainer.Update(modelContainer.GetPrecision());
+            }
+            Logger.Info($"Sink received {sink.Received} products");
+
+            ERS.Uninitialize();
+        }
+    }
+}
