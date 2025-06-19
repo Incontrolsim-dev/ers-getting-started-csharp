@@ -9,16 +9,13 @@ namespace ReusableComponents
 
         public override void OnEntered(ulong newChild)
         {
-            Logger.Debug($"Queue received {newChild.GetName()}");
+            Logger.Debug("Queue received {0}", newChild.GetName());
 
             var channel = ConnectedEntity.GetComponent<Channel>();
             if (ConnectedEntity.GetComponent<RelationComponent>().Value.ChildCount() >= Capacity)
                 channel.Value.InputOpen = false;
 
-            if (channel.Value.ToEntity.GetComponent<Channel>().Value.InputOpen)
-            {
-                MoveNext();
-            }
+            MoveNext();
         }
 
         public override void OnExited(ulong oldChild)
@@ -28,10 +25,12 @@ namespace ReusableComponents
 
         public void MoveNext()
         {
+            // If the queue is empty, do nothing and return
             var relation = ConnectedEntity.GetComponent<RelationComponent>();
             if (relation.Value.ChildCount() == 0)
                 return;
 
+            // Only move an entity out of the queue if the target is ready to receive it
             var channel = ConnectedEntity.GetComponent<Channel>();
             if (channel.Value.ToEntity.GetComponent<Channel>().Value.InputOpen)
             {
