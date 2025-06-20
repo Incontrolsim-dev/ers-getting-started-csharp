@@ -33,11 +33,19 @@ namespace ReusableComponents
             Logger.Debug("Server process delay: {0:F2}s", processTime);
             EventScheduler.ScheduleLocalEvent(0, unitProcessTime, () =>
             {
-                Entity child = ConnectedEntity.GetComponent<RelationComponent>().Value.First();
-                child.GetComponent<Product>().Value.Filled = true;
-
                 Entity target = ConnectedEntity.GetComponent<Channel>().Value.ToEntity;
-                SubModel.GetSubModel().UpdateParentOnEntity(child, target);
+                if (target.GetComponent<Channel>().Value.InputOpen)
+                {
+                    // Product can be moved, process it and move it
+                    Entity child = ConnectedEntity.GetComponent<RelationComponent>().Value.First();
+                    child.GetComponent<Product>().Value.Filled = true;
+                    SubModel.GetSubModel().UpdateParentOnEntity(child, target);
+                }
+                else
+                {
+                    // Could not move the product, retry
+                    Process();
+                }
             });
         }
     }

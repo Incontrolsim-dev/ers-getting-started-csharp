@@ -19,12 +19,14 @@ namespace ExpandingTheModel
             sim.EnterSubModel();
 
             SubModel subModel = SubModel.GetSubModel();
+            // Register the custom components
             subModel.AddComponentType<SourceBehavior>();
             subModel.AddComponentType<QueueBehavior>();
             subModel.AddComponentType<ServerBehavior>();
             subModel.AddComponentType<SinkBehavior>();
             subModel.AddComponentType<Product>();
 
+            // Create the simulation objects
             Entity sourceEntity = subModel.CreateEntity("Source");
             SourceBehavior source = sourceEntity.AddComponent<SourceBehavior>();
 
@@ -37,6 +39,7 @@ namespace ExpandingTheModel
             Entity sinkEntity = subModel.CreateEntity("Sink");
             SinkBehavior sink = sinkEntity.AddComponent<SinkBehavior>();
 
+            // Connect the simulation objects
             source.Target = queueEntity;
             queue.Target = serverEntity;
             server.From = queueEntity;

@@ -19,6 +19,7 @@ namespace ReusableComponents
             sim.EnterSubModel();
 
             SubModel subModel = SubModel.GetSubModel();
+            // Register the custom components
             subModel.AddComponentType<SourceBehavior>();
             subModel.AddComponentType<QueueBehavior>();
             subModel.AddComponentType<ServerBehavior>();
@@ -26,6 +27,7 @@ namespace ReusableComponents
             subModel.AddComponentType<Product>();
             subModel.AddComponentType<Channel>();
 
+            // Create the simulation objects
             Entity sourceEntity = subModel.CreateEntity("Source");
             sourceEntity.AddComponent<SourceBehavior>();
             sourceEntity.AddComponent<Channel>();
@@ -48,6 +50,7 @@ namespace ReusableComponents
             var serverChannel = serverEntity.GetComponent<Channel>();
             var sinkChannel = sinkEntity.GetComponent<Channel>();
 
+            // Connect the simulation objects
             sourceChannel.Value.ToEntity = queueEntity;
             queueChannel.Value.FromEntity = sourceEntity;
             queueChannel.Value.ToEntity = serverEntity;
