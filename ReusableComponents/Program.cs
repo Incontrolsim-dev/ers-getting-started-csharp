@@ -41,7 +41,7 @@ namespace ReusableComponents
             serverEntity.AddComponent<Channel>();
 
             Entity sinkEntity = subModel.CreateEntity("Sink");
-            SinkBehavior sink = sinkEntity.AddComponent<SinkBehavior>();
+            sinkEntity.AddComponent<SinkBehavior>();
             sinkEntity.AddComponent<Channel>();
 
             // Important to get the components after adding them all
@@ -66,7 +66,18 @@ namespace ReusableComponents
             {
                 modelContainer.Update(modelContainer.GetPrecision());
             }
-            Logger.Info($"Sink received {sink.Received} products");
+
+            // Log how many products each of the simulation objects saw
+            sim.EnterSubModel();
+            var seenView = subModel.GetView<Channel>([]);
+            while (seenView.Next())
+            {
+                Entity entity = seenView.GetEntity();
+                var channel = seenView.GetComponent<Channel>();
+                Logger.Info($"{entity.GetName()} saw {channel.Value.Seen} products");
+            }
+            seenView.Dispose();
+            sim.ExitSubModel();
 
             ERS.Uninitialize();
         }

@@ -6,7 +6,6 @@ namespace ReusableComponents
     internal class SourceBehavior : ScriptBehaviorComponent
     {
         public ulong GenerationTime = 5;
-        private ulong produced = 0;
 
         public override void OnStart()
         {
@@ -28,9 +27,9 @@ namespace ReusableComponents
             {
                 // Create the product
                 SubModel subModel = SubModel.GetSubModel();
-                Entity entity = subModel.CreateEntity(ConnectedEntity, $"Product{produced + 1}");
+                Entity entity = subModel.CreateEntity(ConnectedEntity, $"Product{channel.Value.Seen + 1}");
                 entity.AddComponent<Product>();
-                produced++;
+                channel.Value.Seen++;
 
                 // Move the product to the next simulation object
                 subModel.UpdateParentOnEntity(entity, channel.Value.ToEntity);

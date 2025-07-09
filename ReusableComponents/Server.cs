@@ -11,7 +11,9 @@ namespace ReusableComponents
         public override void OnEntered(ulong newChild)
         {
             Logger.Debug("Server received {0}", newChild.GetName());
-            ConnectedEntity.GetComponent<Channel>().Value.InputOpen = false;
+            var channel = ConnectedEntity.GetComponent<Channel>();
+            channel.Value.InputOpen = false;
+            channel.Value.Seen++;
             Process();
         }
 

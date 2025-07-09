@@ -12,6 +12,7 @@ namespace ReusableComponents
             Logger.Debug("Queue received {0}", newChild.GetName());
 
             var channel = ConnectedEntity.GetComponent<Channel>();
+            channel.Value.Seen++;
             if (ConnectedEntity.GetComponent<RelationComponent>().Value.ChildCount() >= Capacity)
                 channel.Value.InputOpen = false;
 

@@ -13,8 +13,7 @@ namespace GettingStarted
         public override void OnStart()
         {
             // Start infinite product generating event loop
-            ulong delay = 5;
-            SubModel.ApplyModelPrecision(ref delay);
+            ulong delay = SubModel.GetSubModel().ApplyModelPrecision(5);
             EventScheduler.ScheduleLocalEvent(0, delay, GenerateProduct);
         }
 
@@ -29,8 +28,7 @@ namespace GettingStarted
             subModel.UpdateParentOnEntity(entity, Target);
 
             // Re-schedule this function, creating a loop
-            ulong delay = 5;
-            SubModel.ApplyModelPrecision(ref delay);
+            ulong delay = subModel.ApplyModelPrecision(5);
             EventScheduler.ScheduleLocalEvent(0, delay, GenerateProduct);
         }
     }

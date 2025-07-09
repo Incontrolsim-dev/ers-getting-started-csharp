@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Ers" Version="0.4.0-develop-155-2111de31d5ca4fa347cea688f9398c936c7c1cd7" />
+    <PackageReference Include="Ers" Version="0.5.2" />
   </ItemGroup>
 
 </Project>

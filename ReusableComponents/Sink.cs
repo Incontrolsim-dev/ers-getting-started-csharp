@@ -5,11 +5,9 @@ namespace ReusableComponents
 {
     internal class SinkBehavior : ScriptBehaviorComponent
     {
-        public ulong Received = 0;
-
         public override void OnEntered(Entity newChild)
         {
-            Received++;
+            ConnectedEntity.GetComponent<Channel>().Value.Seen++;
             SubModel.GetSubModel().DestroyEntity(newChild);
         }
     }
