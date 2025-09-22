@@ -1,6 +1,4 @@
 ﻿using Ers;
-using Ers.Model;
-using Ers.Platform;
 
 namespace ReusableComponents
 {
